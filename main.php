@@ -16,6 +16,7 @@
      if($tipo == 'registrarSala'){
         $nombre=$_POST['nombre'];
         $capacidad=$_POST['capacidad'];
+        $color=$_POST['color'];
 
         $exist=$bd->select("SELECT Id as variable FROM `salas` WHERE Nombre='".$nombre."'")['variable'];
         if($exist>0){
@@ -23,7 +24,7 @@
             return;
         }
 
-        $insert="INSERT INTO `salas` (`Nombre`, `Capacidad`, `Estatus`) VALUES ('".$nombre."', '".$capacidad."', 1)";
+        $insert="INSERT INTO `salas` (`Nombre`, `Capacidad`, `Color`, `Estatus`) VALUES ('".$nombre."', '".$capacidad."', '".$color."', 1)";
         if($bd->query($insert)){
             echo "ok";
         }
@@ -36,8 +37,7 @@
         while($res=$bd->fassoc($consulta)){
             $array[$x]['nombre'] = $res['Nombre'];
             $array[$x]['capacidad'] = $res['Capacidad'];
-            if($res['Estatus']==1) $array[$x]['estatus']='<span class="text-success">Disponible</span>';
-            if($res['Estatus']==0) $array[$x]['estatus']='<span class="text-warning">En Mantenimiento</span>';
+            $array[$x]['color']='<i class="fa fa-square" style="padding-top:3px; color: '.$res['Color'].'; text-shadow: 0 0 3px #000;"></i>';
             $array[$x]['edit'] = '<a onclick="infoEditaSala('.$res['Id'].')" data-toggle="modal" data-target="#editSalaModal" class="btn btn-primary shadow btn-xs sharp mr-1"><i class="fa fa-pen" style="padding-top:3px"></i></a>';
             $array[$x]['delete'] = '<a onclick="eliminarSala('.$res['Id'].')" class="btn btn-danger shadow btn-xs sharp mr-1" title="Eliminar Sala"><i class="fa fa-trash-alt" style="padding-top:3px"></i></a>';
             $x++;
@@ -54,7 +54,7 @@
             $array[1]['nombre'] = $res['Nombre'];
             $array[1]['id'] = $res['Id'];
             $array[1]['capacidad'] = $res['Capacidad'];
-            $array[1]['estatus'] = $res['Estatus'];
+            $array[1]['color'] = $res['Color'];
 
         }
         echo json_encode($array);
@@ -64,7 +64,7 @@
         $nombre=$_POST['nombre'];
         $id=$_POST['id'];
         $capacidad=$_POST['capacidad'];
-        $estatus=$_POST['estatus'];
+        $color=$_POST['color'];
 
         $exist=$bd->select("SELECT Id as variable FROM `salas` WHERE Nombre='".$nombre."' and Id!='".$id."' ")['variable'];
         if($exist>0){
@@ -72,7 +72,7 @@
             return;
         }
 
-        $query="UPDATE `salas` SET `Nombre`='".$nombre."', `Capacidad`='".$capacidad."', `Estatus`='".$estatus."' WHERE Id='".$id."' ";
+        $query="UPDATE `salas` SET `Nombre`='".$nombre."', `Capacidad`='".$capacidad."', `Color`='".$color."' WHERE Id='".$id."' ";
         if($bd->query($query)){
             echo "ok";
         }
@@ -100,50 +100,97 @@
         echo json_encode($array);
     }
 
-    else if ($tipo == 'calendarioRes') {
-            $desde = $_POST['desde'];
-            $hasta = $_POST['hasta'];
-            $array = array();
-            $x = 0;
-            $minHora = $bd->select("SELECT MIN(HoraI) as variable FROM clases WHERE Empresa='".$empresa."' AND Sucursal='".$sucursal."' AND Fecha>='".$desde."' AND Fecha<='".$hasta."' AND Estatus>0 ")['variable'];
-            $consulta = $bd->query("SELECT Id, Clase, Fecha, HoraI, HoraT, Cupo FROM clases WHERE Empresa='".$empresa."' AND Sucursal='".$sucursal."' AND Fecha>='".$desde."' AND Fecha<='".$hasta."' AND Estatus>0 ");
-            while ($res = $bd->fassoc($consulta)) {
-                $clase = $bd->select("SELECT Valor, Descripcion, Atributo2 FROM catalogos WHERE Tipo='Clase' AND Id='".$res['Clase']."' ");
-                $reservados = $bd->select("SELECT COUNT(Id) as variable FROM `relaciones` WHERE Tipo='ClaseAtleta' and Valor1='".$res['Id']."' and Empresa='".$empresa."' and Estatus=1")['variable'];
+    else if($tipo == 'registraRes'){
+       $sala=$_POST['sala'];
+       $fecha=$_POST['fecha'];
+       $horaI=$_POST['horaI'];
+       $horaT=$_POST['horaT'];
 
-                $start = $res['Fecha'].' '.$res['HoraI'];
-                $end   = $res['Fecha'].' '.$res['HoraT'];
+       $exist=$bd->select("SELECT Id as variable FROM `reservaciones` WHERE Sala='".$sala."' and Fecha='".$fecha."' AND (('".$horaI."'>=HoraI AND '".$horaT."'<=HoraT) OR ('".$horaI."'>=HoraI AND '".$horaI."'<=HoraT) OR ('".$horaT."'>=HoraI AND '".$horaT."'<=HoraT) OR (HoraI>='".$horaI."' and HoraT<='".$horaT."')) and Estatus>0")['variable'];
+       if($exist>0){
+           echo "exist";
+           return;
+       }
 
-                $array[$x]['id']        = $res['Id'];
-                $array[$x]['title']     = utf8_encode($clase['Valor'].' ('.$reservados.' de '.$res['Cupo'].')');
-                $array[$x]['start']     = $start;
-                $array[$x]['end']       = $end;
-                $array[$x]['minHora']   = $minHora;
-                $array[$x]['color']     = $clase['Atributo2'];
-                $array[$x]['textColor'] = "#FFFFFF";
+       $insert="INSERT INTO `reservaciones` (`Sala`, `Fecha`, `HoraI`, `HoraT`, `FechaRegistro`, `Estatus`) VALUES ('".$sala."', '".$fecha."', '".$horaI."', '".$horaT."', '".$hoy."', 1)";
+       if($bd->query($insert)){
+           echo "ok";
+       }
+   }
 
-                $x++;
-            }
-            echo json_encode($array);
-        }
+   else if ($tipo == 'calendarioRes') {
+           $desde = $_POST['desde'];
+           $hasta = $_POST['hasta'];
+           $array = array();
+           $x = 0;
+           $minHora = $bd->select("SELECT MIN(HoraI) as variable FROM reservaciones WHERE Fecha>='".$desde."' AND Fecha<='".$hasta."' ")['variable'];
+           $consulta = $bd->query("SELECT * FROM reservaciones WHERE Fecha>='".$desde."' AND Fecha<='".$hasta."'");
+           while ($res = $bd->fassoc($consulta)) {
+               $sala = $bd->select("SELECT Nombre, Color FROM salas WHERE Id='".$res['Sala']."' ");
 
-        else if($tipo == 'registraRes'){
-           $sala=$_POST['sala'];
-           $fecha=$_POST['fecha'];
-           $horaI=$_POST['horaI'];
-           $horaT=$_POST['horaT'];
+               $start = $res['Fecha'].' '.$res['HoraI'];
+               $end   = $res['Fecha'].' '.$res['HoraT'];
 
-           $exist=$bd->select("SELECT Id as variable FROM `reservaciones` WHERE Sala='".$sala."' and Fecha='".$fecha."' AND (('".$horaI."'>=HoraI AND '".$horaT."'<=HoraT) OR ('".$horaI."'>=HoraI AND '".$horaI."'<=HoraT) OR ('".$horaT."'>=HoraI AND '".$horaT."'<=HoraT) OR (HoraI>='".$horaI."' and HoraT<='".$horaT."'))")['variable'];
-           if($exist>0){
-               echo "exist";
-               return;
+               $array[$x]['id']        = $res['Id'];
+               $array[$x]['title']     = $sala['Nombre'];
+               $array[$x]['start']     = $start;
+               $array[$x]['end']       = $end;
+               $array[$x]['minHora']   = $minHora;
+               $array[$x]['estatus']   = $res['Estatus'];
+               $array[$x]['textColor'] = "#FFFFFF";
+               $array[$x]['color']     = $sala['Color'];
+               if($res['Estatus']==0)$array[$x]['color']     = "grey";
+
+               $x++;
            }
+           echo json_encode($array);
+       }
 
-           $insert="INSERT INTO `reservaciones` (`Sala`, `Fecha`, `HoraI`, `HoraT`, `Estatus`) VALUES ('".$sala."', '".$fecha."', '".$horaI."', '".$horaT."', 1)";
-           if($bd->query($insert)){
+       else if($tipo == 'infoRes'){
+           $id=$_POST['id'];
+           $array = array();
+           $consulta=$bd->query("SELECT * FROM reservaciones WHERE Id='".$id."' ");
+           while($res=$bd->fassoc($consulta)){
+               $sala = $bd->select("SELECT Nombre, Capacidad FROM salas WHERE Id='".$res['Sala']."' ");
+               $array[1]['nombre'] = $sala['Nombre'];
+               $array[1]['capacidad'] = $sala['Capacidad'];
+               $array[1]['fecha'] = $funciones->fecha_gr($res['FechaRegistro']);
+               $array[1]['estatus'] = $res['Estatus'];
+
+           }
+           echo json_encode($array);
+       }
+
+       else if($tipo == 'liberarSala'){
+           $id=$_POST['id'];
+
+           $query="UPDATE `reservaciones` SET `Estatus`='0' WHERE Id='".$id."' ";
+           if($bd->query($query)){
                echo "ok";
            }
        }
+
+       else if($tipo == 'liberarAuto'){
+           $array = array();
+           $libre='no';
+           $consulta=$bd->query("SELECT * FROM reservaciones WHERE Estatus>0 ");
+           while($res=$bd->fassoc($consulta)){
+             if($res['Fecha']<$hoy){
+               $query="UPDATE `reservaciones` SET `Estatus`='0' WHERE Id='".$res['Id']."' ";
+               if($bd->query($query)){
+                   $libre='libre';
+               }
+             }else if($res['Fecha']==$hoy && $res['HoraT']<=$hora){
+               $query="UPDATE `reservaciones` SET `Estatus`='0' WHERE Id='".$res['Id']."' ";
+               if($bd->query($query)){
+                   $libre='libre';
+               }
+             }
+
+           }
+           echo $libre;
+       }
+
 
 
 

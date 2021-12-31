@@ -27,10 +27,12 @@
       <link href="assets/vendor/datatables/css/jquery.dataTables.min.css" rel="stylesheet">
       <!--=============== fontawesome  ===============-->
       <link rel="stylesheet" href="assets/vendor/font-awesome/css/all.css">
+      <!--=============== calendar  ===============-->
+    <link href="assets/vendor/fullcalendar/lib/main.css" rel="stylesheet">
 
   </head>
 
-  <body onload="tablaSalas(), calendarioRes('<?php echo $desde; ?>', '<?php echo $hasta; ?>', 'timeGridWeek')">
+  <body onload="tablaSalas(), calendarioRes('<?php echo $desde; ?>', '<?php echo $hasta; ?>', 'timeGridWeek'), setInterval('liberarAuto()', 60000);">
 
       <!--Preloader-->
       <div id="preloader">
@@ -50,18 +52,18 @@
                       </div>
 
                       <div class="card-body">
-                        <!-- Nav tabs -->
-                        <div class="default-tab">
+                          <!-- Nav tabs -->
+                          <div class="default-tab">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" data-toggle="tab" href="#navRegistro"><i class="la la-plus-square mr-2"></i> Registro de Salas</a>
+                                    <a class="nav-link active" data-toggle="tab" href="#navReserva"><i class="la la-calendar-check mr-2"></i> Reservación de Salas</a>
                                 </li>
-                                <li class="nav-item" onclick="">
-                                    <a class="nav-link" data-toggle="tab" href="#navReserva"><i class="la la-calendar-check mr-2"></i> Reservación de Salas</a>
+                                <li class="nav-item">
+                                    <a class="nav-link " data-toggle="tab" href="#navRegistro"><i class="la la-plus-square mr-2"></i> Registro de Salas</a>
                                 </li>
                             </ul>
                             <div class="tab-content">
-                                <div class="tab-pane fade show active" id="navRegistro" role="tabpanel">
+                                <div class="tab-pane fade" id="navRegistro">
                                     <br>
                                     <div class="row">
                                        <div class="col-md-12">
@@ -75,17 +77,20 @@
                                     </div>
                                 </div>
 
-                                <div class="tab-pane fade" id="navReserva">
+                                <div class="tab-pane fade show active" id="navReserva" role="tabpanel">
                                     <br>
                                     <div class="row">
-                                        <div class="col-md-12"><button type="button" class="btn light btn-success pull-right optionInsert" data-toggle="modal" data-target="#nuevaRes">Nueva Reservación <i class="fa fa-plus"></i></button></div>
+                                        <div class="col-md-12">
+                                          <button type="button" class="btn light btn-success pull-right optionInsert" data-toggle="modal" data-target="#nuevaRes">Nueva Reservación <i class="fa fa-plus"></i></button>
+                                        </div>
+                                        <div class="col-md-12">
+                                          <div id="calendar" class="app-fullcalendar"></div>
+                                        </div>
                                     </div>
-                                    <div>
-                                    <div id="calendar" class="app-fullcalendar"></div>
                                 </div>
 
                             </div>
-                        </div>
+                          </div>
                       </div>
                   </div>
               </div>
@@ -125,7 +130,7 @@
                               <label>Fecha:  <span class="text-danger">*</span></label>
                               <div class="input-group input-info-o">
                                   <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-calendar-alt"></i> </span></div>
-                                  <input type="date" id="fecha" class="form-control" min="<?php echo $hoy; ?>" onchange="">
+                                  <input type="date" id="fecha" class="form-control" min="<?php echo $hoy; ?>" value="<?php echo $hoy; ?>" onchange="">
                               </div>
                           </div>
 
@@ -158,7 +163,6 @@
           </div>
       </div>
 
-
         <!-- Nueva Sala -->
         <div class="modal fade bd-example-modal-lg optionInsert" id="nuevaSala" tabindex="3" role="dialog" aria-hidden="true">
           <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -188,11 +192,20 @@
                               <span class="text-danger" id="spanCapacidadS" style="display: none;"></span>
                           </div>
 
+                          <div class="form-group col-lg-12">
+                              <label>Color: <span class="text-danger">*</span></label>
+                              <div class="input-group input-info-o">
+                                  <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-hashtag"></i> </span></div>
+                                  <input type="color" id="colorS" class="form-control">
+                              </div>
+                              <span class="text-danger" id="spanColorS" style="display: none;"></span>
+                          </div>
+
                       </div>
                   </div>
                   <div class="modal-footer">
                       <button type="button" class="btn btn-light light" data-dismiss="modal">Cancelar</button>
-                      <button type="button" class="btn btn-success" id="btnRegistraSala" onclick="registrarSala(nombreS.value, capacidadS.value)">Registrar Sala</button>
+                      <button type="button" class="btn btn-success" id="btnRegistraSala" onclick="registrarSala(nombreS.value, capacidadS.value, colorS.value)">Registrar Sala</button>
                   </div>
               </div>
           </div>
@@ -229,28 +242,68 @@
                               <span class="text-danger" id="spanCapacidadSE" style="display: none;"></span>
                           </div>
 
-                            <div class="form-group col-lg-12">
-                                <label>Estatus:</label>
-                                <div class="input-group input-info-o">
-                                    <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-eye"></i> </span></div>
-                                    <select class="form-control" id="estatusSE">
-                                      <option value="1">Disponible</option>
-                          						<option value="0">En Mantenimiento</option>
-                          				  </select>
-                                </div>
-                            </div>
+                          <div class="form-group col-lg-12">
+                              <label>Color: <span class="text-danger">*</span></label>
+                              <div class="input-group input-info-o">
+                                  <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-hashtag"></i> </span></div>
+                                  <input type="color" id="colorSE" class="form-control">
+                              </div>
+                              <span class="text-danger" id="spanColorSE" style="display: none;"></span>
+                          </div>
 
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light light" data-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-success" id="btnEditarSala" onclick="editaSala(nombreSE.value, capacidadSE.value, estatusSE.value, idSalaE.value)">Guardar Cambios</button>
+                        <button type="button" class="btn btn-success" id="btnEditarSala" onclick="editaSala(nombreSE.value, capacidadSE.value, colorSE.value, idSalaE.value)">Guardar Cambios</button>
                     </div>
                 </div>
             </div>
           </div>
 
+          <!-- Liberar Sala -->
+          <div class="modal fade bd-example-modal-md" id="infoResModal" tabindex="3" role="dialog" aria-hidden="true">
+             <div class="modal-dialog modal-dialog-scrollable modal-md">
+                 <div class="modal-content">
+                     <div class="modal-header">
+                         <h3 class="modal-title" id="titleH3">Sala</h3>
+                         <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                         </button>
+                     </div>
+                     <div class="modal-body">
+                         <input type="hidden" id="idRes">
 
+                         <div class="form-row">
+                           <div class="col-sm-5">
+                            <label>Capacidad:</label>
+                          </div>
+                          <div class="col-sm-7">
+                            <h4  style="padding-top: 10px;"><span id="capacidadRes" class="text-dark"></span></h4>
+                          </div>
+                          <div class="col-sm-5">
+                           <label>Reservada el:</label>
+                         </div>
+                         <div class="col-sm-7">
+                           <h4  style="padding-top: 10px;"><span id="fechaRes" class="text-dark"></span></h4>
+                         </div>
+
+                         <div class="col-sm-5">
+                          <label>Estatus:</label>
+                        </div>
+                        <div class="col-sm-7">
+                          <h4  style="padding-top: 10px;"><span id="estatusRes" class="text-dark"></span></h4>
+                        </div>
+
+                        </div>
+
+                     </div>
+                     <div class="modal-footer">
+                         <button type="button" class="btn btn-light light" data-dismiss="modal">Cerrar</button>
+                         <button type="button" class="btn btn-info" id="btnLiberarSala" onclick="liberarSala(idRes.value)" style="display: none">Liberar Sala</button>
+                     </div>
+                 </div>
+             </div>
+           </div>
 
       <!-- Scripts -->
       <script src="assets/vendor/global/global.min.js"></script>
@@ -262,6 +315,11 @@
       <script src="assets/js/bootstrap-notify.js"></script>
       <script src="assets/vendor/sweetalert2/dist/sweetalert2.min.js"></script>
       <script src="assets/js/plugins-init/sweetalert.init.js"></script>
+
+      <!-- full calendar  -->
+      <script src="assets/vendor/moment/moment.min.js"></script>
+      <script src="assets/vendor/fullcalendar/lib/main.js"></script>
+      <script type='text/javascript' src='assets/vendor/fullcalendar/lib/locales/es.js'></script>
 
       <!-- Datatable -->
       <script src="assets/vendor/datatables/js/jquery.dataTables.min.js"></script>

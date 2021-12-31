@@ -55,9 +55,10 @@ function mensaje(from, align, time, color, mensaje, icono) {
 
 /*---------- Inician funciones de usuarios  ------*/
 
-function registrarSala(nombre, capacidad) {
+function registrarSala(nombre, capacidad, color) {
     $('#spanNombreS').fadeOut();
     $('#spanCapacidadS').fadeOut();
+    $('#spanColorS').fadeOut();
 
     if (nombre.trim() == "") {
         mensaje('top', 'center', 2000, 3, 'Ingrese el nombre de la sala por favor', '<i class="fa fa-exclamation-triangle fa-lg"></i>');
@@ -80,7 +81,7 @@ function registrarSala(nombre, capacidad) {
         },
         url: 'main.php',
         type: 'POST',
-        data: { nombre, capacidad, tipo: 'registrarSala' },
+        data: { nombre, capacidad, color, tipo: 'registrarSala' },
         success: function(respuesta) {
             console.log(respuesta);
             if (respuesta == "ok") {
@@ -127,10 +128,10 @@ function tablaSalas() {
             console.log(respuesta);
             var json = JSON.parse(respuesta);
             $('#tablaSalas').empty();
-            $('#tablaSalas').append('<thead class="thead-light"><tr> <th>Nombre</th>  <th>Capacidad</th> <th>Estatus</th> <th>Editar</th>  <th>Eliminar</th> </tr></thead>');
+            $('#tablaSalas').append('<thead class="thead-light"><tr> <th>Nombre</th>  <th>Capacidad</th> <th>Color</th> <th>Editar</th>  <th>Eliminar</th> </tr></thead>');
             $('#tablaSalas').append('<tbody>');
             $.each(json, function(index, val) {
-                $('#tablaSalas').append('<tr> <td>' + val['nombre'] +'</td> <td>' + val['capacidad'] + '</td> <td>' + val['estatus'] + '</td> <td>' + val['edit'] + '</td> <td>' + val['delete'] + '</td> </tr>');
+                $('#tablaSalas').append('<tr> <td>' + val['nombre'] +'</td> <td>' + val['capacidad'] + '</td> <td>' + val['color'] + '</td> <td>' + val['edit'] + '</td> <td>' + val['delete'] + '</td> </tr>');
             });
             $('#tablaSalas').append('</tbody>');
             $('#tablaSalas').DataTable();
@@ -157,7 +158,7 @@ function infoEditaSala(id) {
                 $('#nombreSE').val(val['nombre']);
                 $('#idSalaE').val(val['id']);
                 $('#capacidadSE').val(val['capacidad']);
-                $('#estatusSE').val(val['estatus']);
+                $('#colorSE').val(val['color']);
 
             })
         },
@@ -171,9 +172,10 @@ function infoEditaSala(id) {
     });
 }
 
-function editaSala(nombre, capacidad, estatus, id) {
+function editaSala(nombre, capacidad, color, id) {
   $('#spanNombreSE').fadeOut();
   $('#spanCapacidadSE').fadeOut();
+  $('#spanColorSE').fadeOut();
 
   if (nombre.trim() == "") {
       mensaje('top', 'center', 2000, 3, 'Ingrese el nombre de la sala por favor', '<i class="fa fa-exclamation-triangle fa-lg"></i>');
@@ -197,7 +199,7 @@ function editaSala(nombre, capacidad, estatus, id) {
         },
         url: 'main.php',
         type: 'POST',
-        data: { nombre, capacidad, id, estatus, tipo: 'editaSala' },
+        data: { nombre, capacidad, id, color, tipo: 'editaSala' },
         success: function(respuesta) {
             console.log(respuesta);
             if (respuesta == "ok") {
@@ -331,7 +333,7 @@ function registraRes(sala, fecha, horaI, horaT) {
             if (respuesta == "ok") {
                 swal("Registrada!", "Reservación registrada correctamente", "success");
                 $("#nuevaRes").modal('hide');
-                //recargaCalendarioRes();
+                recargaCalendarioRes();
                 //limpiamos formulario
                 $("#salaR").val('no');
             } else if (respuesta == "exist") {
@@ -365,7 +367,7 @@ function calendarioRes(desde, hasta, vista) {
                     start: "2000-01-01"
                 }]
             };
-            var minHora = "07:00:00";
+            var minHora = "00:00:00";
             $.each(json, function(index, val) {
                 eventos.events.push({
                     id: val['id'],
@@ -374,7 +376,10 @@ function calendarioRes(desde, hasta, vista) {
                     start: val['start'],
                     end: val['end'],
                     color: val['color'],
-                    textColor: val['textColor']
+                    textColor: val['textColor'],
+                    extendedProps: {
+                        estatus: val['estatus'],
+                    }
                 });
                 if (val['minHora'] != "") minHora = val['minHora'];
             });
@@ -441,8 +446,8 @@ function calendarioRes(desde, hasta, vista) {
                 dayMaxEvents: true, // allow "more" link when too many events
                 events: eventos,
                 eventClick: function(info) {
-                    infoClase(info.event.id);
-                    $('#datosFecha').modal('show');
+                    infoRes(info.event.id);
+                    $('#infoResModal').modal('show');
                 },
 
             });
@@ -457,4 +462,83 @@ function recargaCalendarioRes() {
     var has = view.currentEnd.toISOString().slice(0, 10);
     var vista = view.type;
     calendarioRes(des, has, vista);
+}
+
+function infoRes(id) {
+    $.ajax({
+        url: 'main.php',
+        type: 'POST',
+        data: { id, tipo: 'infoRes' },
+        success: function(respuesta) {
+            console.log(respuesta);
+            var json = JSON.parse(respuesta);
+            $.each(json, function(index, val) {
+                $('#titleH3').html(val['nombre']);
+                $('#idRes').val(id);
+                $('#capacidadRes').html(val['capacidad']);
+                $('#fechaRes').html(val['fecha']);
+                if(val['estatus']==1){
+                  $('#estatusRes').html('Reservada');
+                  $('#btnLiberarSala').fadeIn();
+                }else{
+                  $('#estatusRes').html('Liberada');
+                  $('#btnLiberarSala').fadeOut();
+                }
+
+
+
+            })
+        },
+        error: function(respuesta) {
+            console.log("Error en Ajax");
+            sweetAlert("Error...", "Error al procesar la solicitud", "error");
+        },
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log("Falla en Ajax");
+        sweetAlert("Error...", "Falló la solicitud de la información", "error");
+    });
+}
+
+function liberarSala(id) {
+    $.ajax({
+        beforeSend: function() {
+            $('#btnLiberarSala').prop("disabled", true);
+            $('#btnLiberarSala').html('<i class="fa fa-circle-notch fa-spin"></i> Liberando...');
+        },
+        url: 'main.php',
+        type: 'POST',
+        data: { id, tipo: 'liberarSala' },
+        success: function(respuesta) {
+            console.log(respuesta);
+            if (respuesta == "ok") {
+                swal("Liberada!", "Sala liberada correctamente", "success");
+                recargaCalendarioRes();
+                $('#infoResModal').modal('hide');
+            }  else {
+                sweetAlert("Error...", "Error al liberar sala", "error");
+            }
+
+            $('#btnLiberarSala').prop("disabled", false);
+            $('#btnLiberarSala').html('Liberar Sala');
+        },
+        error: function(respuesta) {
+            console.log("Error en Ajax");
+            sweetAlert("Error...", "Error al procesar la solicitud", "error");
+        },
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log("Falla en Ajax");
+        sweetAlert("Error...", "Falló la solicitud de la información", "error");
+    });
+}
+
+function liberarAuto() {
+    $.ajax({
+        url: 'main.php',
+        type: 'POST',
+        data: { tipo: 'liberarAuto' },
+        success: function(respuesta) {
+            console.log(respuesta);
+            if (respuesta == "libre") recargaCalendarioRes();
+        },
+    });
 }
