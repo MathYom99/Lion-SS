@@ -1,0 +1,175 @@
+<html>
+  <body>
+    <style type="text/css">
+      body{
+          color: black;
+          background-color: white;
+          font-size: 15px;
+          width: 100%;
+          font-family: georgia;
+      }
+      .mitad{
+          width: 49%;
+          display: inline-block;
+      }
+      .one{
+          width: 48%;
+          display: inline-block;
+      }
+      .two{
+          width: 48%;
+          margin-left: 3%;
+          display: inline-block;
+      }
+      .full{
+          width: 100%;
+      }
+      .box{
+          border: 1px solid #000;
+          text-align: center;
+      }
+      .boxTitle{
+          background-color: #E0E0E0;
+          padding: 3px;
+          padding-left: 10px;
+          width: 20%;
+          border-bottom: 1px solid #E0E0E0;
+          border-right: 1px solid #E0E0E0;
+          font-weight: bold;
+      }
+      .boxBody{
+          padding: 3px;
+          border-bottom: 1px solid #E0E0E0;
+          padding-left: 10px;
+      }
+      .tablaHead{
+          width: 100%;
+          /*border: 1px solid #E0E0E0;*/
+      }
+      p{
+          font-size: 12px;
+          padding: 3px;
+      }
+      .tablaBody{
+          width: 100%;
+          text-align: center;
+          //border: 1px solid #333;
+      }
+      .tablaBody th{
+          background-color: #444;
+          color: #FFF;
+          padding: 2px;
+      }
+      .tablaBody td{
+          font-size: 12px;
+      }
+      .tablaBody td{
+          color: #000;
+          text-align: center;
+      }
+      .tablaBody tr:nth-child(even){
+          background: #E0E0E0;
+      }
+    </style>
+    <div style="width: 100%; border-bottom: 3px solid #666666; margin-bottom: 0px; padding: 1px;">
+        <div style="width: 65%; display: inline-block;">
+            <img src="assets/img/logo.jpg" style="width: 150px; display: inline-block;">
+        </div>
+
+        <div style="width: 33%; padding-top: 20px; display: inline-block;">
+            <label style="font-weight: bold; font: 40px; color: #333333">Crédito: '.$folio.'</label>
+        </div>
+    </div>
+    <br>
+    <label class="titulo" style="">Información al '.$fechaHoy.'</label>
+    <br><br>
+    <div class="full">
+      <table class="tablaHead">
+        <tr>
+          <td class="boxTitle">Cliente: </td>
+          <td class="boxBody" style="font-size: 16px;" colspan="2"><center>'.utf8_encode($nombreC).'</center></td>
+
+          <td class="boxTitle">Aval: </td>
+          <td class="boxBody" style="font-size: 16px;" colspan="2"><center>'.utf8_encode($nombreA).'</center></td>
+        </tr>
+
+        <tr>
+          <td class="boxTitle">Fecha Crédito:</td>
+          <td class="boxBody" colspan="2"><center> '.$fechaCredito.' </center></td>
+
+          <td class="boxTitle">Préstamo: </td>
+          <td class="boxBody" style="font-size: 16px;" colspan="2"><center>'.$monto.'</center></td>
+        </tr>
+        <tr>
+          <td class="boxTitle">Duración: </td>
+          <td class="boxBody" style="font-size: 16px;" colspan="2"><center>'.$duracion.'</center></td>
+
+          <td class="boxTitle">Pago '.$period.':</td>
+          <td class="boxBody" colspan="2"><center>'.$cuota.'</center></td>
+        </tr>';
+        $codigo.= $comentarios;
+        $codigo.='
+      </table>
+    </div>
+    <h3>Listado de Pagos: </h3>';
+    $codigo.='
+    <div class="full">
+      <table class="tablaHead">
+        <tr> <td class="boxTitle"><center>#</center></td> <td class="boxTitle"><center>Fecha Límite</center></td> <td class="boxTitle"><center>Monto</center></td> <td class="boxTitle"><center>Pago</center></td> <td class="boxTitle"><center>Fecha Pago</center></td> <td class="boxTitle"><center>Estatus</center></td></tr>';
+        $contador=0;
+        $consultaPagos=$bd->query("SELECT * FROM pagos WHERE Empresa='".$empresa."' and Estatus>0 AND Credito='".$id."' ORDER BY FechaVencimiento ASC");
+        while($resPagos=$bd->fassoc($consultaPagos)){
+
+          if($resPagos['FechaPago'] == '' || $resPagos['FechaPago'] == '0000-00-00'){
+            $fechaPago = '';
+          }else{
+            $particionPago = explode("-", $resPagos['FechaPago']);
+            $fechaPago = $particionPago[2].' '.$meses[$particionPago[1]].' '.$particionPago[0];
+          }
+          $particionVenci = explode("-", $resPagos['FechaVencimiento']);
+          $fechaVenci = $particionVenci[2].' '.$meses[$particionVenci[1]].' '.$particionVenci[0];
+          if($resPagos['Abono']>0) $pagoAb = '$'.number_format($resPagos['Abono'], 2, ".", ",");
+          else $pagoAb = '';
+
+          if($resPagos['Cargo']==$resPagos['Abono']){
+              $estatus='Pagado';
+              if($resPagos['FechaPago']==$resPagos['FechaVencimiento']) $color='#388E3C';
+              else if($resPagos['FechaPago']<$resPagos['FechaVencimiento']){
+                $dias = $funciones->dias_transcurridos($resPagos['FechaPago'], $resPagos['FechaVencimiento']);
+                if($dias>6) $color='#673AB7';
+                else $color='#388E3C';
+              }
+              else $color='#F57C00';
+          }else if($resPagos['Abono']>0){
+              $estatus='Parcialmente Pagado';
+              if($hoy<=$resPagos['FechaVencimiento']) $color='#388E3C';
+              else $color='#d32f2f';
+          }else{
+              if($hoy<=$resPagos['FechaVencimiento']){
+                  $estatus='Pendiente';
+                  $color='#F57C00';
+              }else{
+                  $estatus='No Pagado';
+                  $color='#d32f2f';
+              }
+          }
+
+          if($resPagos['Tipo'] == 'P'){
+              $contador++;
+              $valor=$contador;
+          }else if($resPagos['Tipo'] == 'MP'){
+              $contador++;
+              $valor=$contador.' (Multa)';
+          }else{
+              $valor='Multa';
+          }
+
+          $codigo.='<tr> <td class="boxBody" style="width: 5%;"><center>'.$valor.'</center></td> <td class="boxBody" style="width: 20%;"><center>'.$fechaVenci.'</center></td> <td class="boxBody" style="width: 7%;"><center>'.number_format($resPagos['Cargo'], 2, ".", ",").'</center></td> <td class="boxBody" style="width: 7%;"><center>'.$pagoAb.'</center></td> <td class="boxBody" style="width: 20%;"><center>'.$fechaPago.'</center></td> <td class="boxBody" style="width: 20%; color: '.$color.'"><center>'.$estatus.'</center></td></tr>';
+
+        }
+        $codigo.='
+      </table>
+    </div>';
+   $codigo.='
+  </body>
+</html>'
