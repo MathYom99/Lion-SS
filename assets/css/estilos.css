@@ -1,0 +1,361 @@
+/* estilos countdown  */
+
+.master-circle {
+    display: inline-flex;
+    width: 100px;
+    /* 150 */
+    height: 100px;
+    /* 150 */
+}
+
+.circle {
+    display: inline-flex;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    border: 5px solid #3EA8C5;
+    height: 100px;
+    /* 150 */
+    width: 100px;
+    /* 150 */
+    border-radius: 100px;
+    /* 150 */
+    /*box-shadow: 1px 1px 1px 1px #3EA8C5;*/
+    transform: rotateY(180deg);
+    animation-name: clipCircle;
+    animation-duration: 7s;
+    animation-iteration-count: infinite;
+    animation-timing-function: cubic-bezier(0, 0, 1, 1);
+    animation-direction: reverse;
+}
+
+.seconds {
+    color: black;
+    position: absolute;
+    display: inline-flex;
+    height: 110px;
+    /* 160 */
+    width: 110px;
+    /* 156 */
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+    font-family: 'Roboto', sans-serif;
+}
+
+@keyframes clipCircle {
+    0% {
+        clip-path: polygon(50% 50%, 50% 00%, 50% 00%, 50% 00%, 50% 00%, 50% 00%, 50% 00%, 50% 00%, 50% 00%, 50% 00%)
+    }
+    /* center, top-center*/
+    12.5% {
+        clip-path: polygon(50% 50%, 50% 00%, 00% 00%, 00% 00%, 00% 00%, 00% 00%, 00% 00%, 00% 00%, 00% 00%, 00% 00%)
+    }
+    /* center, top-center, top-left*/
+    25% {
+        clip-path: polygon(50% 50%, 50% 00%, 00% 00%, 00% 50%, 00% 50%, 00% 50%, 00% 50%, 00% 50%, 00% 50%, 00% 50%)
+    }
+    /* center, top-center, top-left, left-center*/
+    37.5% {
+        clip-path: polygon(50% 50%, 50% 00%, 00% 00%, 00% 50%, 00% 100%, 00% 100%, 00% 100%, 00% 100%, 00% 100%, 00% 100%)
+    }
+    /* center, top-center, top-left, left-center, bottom-left*/
+    50% {
+        clip-path: polygon(50% 50%, 50% 00%, 00% 00%, 00% 50%, 00% 100%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 50% 100%)
+    }
+    /* center, top-center, top-left, left-center, bottom-left, bottom-center*/
+    62.5% {
+        clip-path: polygon(50% 50%, 50% 00%, 00% 00%, 00% 50%, 00% 100%, 50% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%)
+    }
+    /* center, top-center, top-left, left-center, bottom-left, bottom-center, bottom-right*/
+    75% {
+        clip-path: polygon(50% 50%, 50% 00%, 00% 00%, 00% 50%, 00% 100%, 50% 100%, 100% 100%, 100% 50%, 100% 50%, 100% 50%)
+    }
+    /* center, top-center, top-left, left-center, bottom-left, bottom-center, bottom-right, right-center*/
+    87.5% {
+        clip-path: polygon(50% 50%, 50% 00%, 00% 00%, 00% 50%, 00% 100%, 50% 100%, 100% 100%, 100% 50%, 100% 00%, 100% 00%)
+    }
+    /* center, top-center, top-left, left-center, bottom-left, bottom-center, bottom-right, right-center top-right*/
+    100% {
+        clip-path: polygon(50% 50%, 50% 00%, 00% 00%, 00% 50%, 00% 100%, 50% 100%, 100% 100%, 100% 50%, 100% 00%, 50% 00%)
+    }
+    /* center, top-center, top-left, left-center, bottom-left, bottom-center, bottom-right, right-center top-right, top-center*/
+}
+
+
+/* fin estilos countdown  */
+
+.pull-right {
+    float: right!important;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+
+/* check box style  */
+
+@import url(https://fonts.googleapis.com/css?family=Lato:400,700);
+div {}
+
+div>label {
+    display: block;
+    margin-bottom: 15px;
+    margin-top: 10px;
+}
+
+.custom-checkbox {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.custom-checkbox>input {
+    position: absolute;
+    outline: none;
+    left: 0;
+    top: 0;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+    border: none;
+    margin: 0;
+    opacity: 0;
+    z-index: 1;
+}
+
+
+/* DEFAULT STYLES */
+
+.custom-checkbox>.box {
+    background-color: #ffffff;
+    box-sizing: border-box;
+    display: inline-block;
+    height: 75px;
+    line-height: 55px;
+    text-align: center;
+    width: 105px;
+    border: 1px solid #62c8d0;
+    border-radius: 5px;
+    cursor: pointer;
+    float: left;
+    font-size: 16px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    position: relative;
+}
+
+.custom-checkbox>.box>.tick {
+    display: none;
+}
+
+
+/* CHECKED STYLES */
+
+.custom-checkbox>input:checked~.box,
+
+/*IE8*/
+
+.custom-checkbox.checked>.box {
+    background: #62c8d0;
+    color: #FFF;
+}
+
+.custom-checkbox>input:checked~.box>.tick,
+
+/*IE8*/
+
+.custom-checkbox.checked>.box>.tick {
+    display: block;
+}
+
+.custom-checkbox>input:active~.box {
+    border-color: #aaa;
+    background-color: #ddd;
+}
+
+
+/* fin check box style  */
+
+
+/* comienza checkbox horarios*/
+
+#chbox {
+    width: 30%;
+}
+
+#chbox>input {
+    display: none;
+}
+
+#chbox span {
+    color: #6A759B;
+}
+
+#chbox i {
+    display: inline-block;
+    width: 50px;
+    height: 25px;
+    border-radius: 20px;
+    vertical-align: middle;
+    -webkit-transition: .25s .09s;
+    transition: .25s .09s;
+    position: relative;
+    background: #bbb;
+    top: 0px;
+}
+
+#chbox i:after {
+    content: "";
+    display: block;
+    width: 20px;
+    height: 20px;
+    top: 2px;
+    left: 2px;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+    -webkit-box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.4);
+    -webkit-transition: .15s;
+    transition: .15s;
+}
+
+#chbox>input:checked+i {
+    background: #00C853;
+}
+
+#chbox>input:checked+i+span {
+    color: #29316b;
+}
+
+#chbox>input:checked+i:after {
+    -webkit-transform: translateX(25px);
+    transform: translateX(25px);
+}
+
+
+/* termina checkbox horarios*/
+
+
+/* estilos input file  */
+
+.file-upload {
+    background-color: #ffffff;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.file-upload-content {
+    display: none;
+    text-align: center;
+    float: left;
+}
+
+.file-upload-input {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.image-upload-wrap {
+    margin-top: 20px;
+    border: 4px dashed #1EA7C5;
+    /* #1FB264; */
+    position: relative;
+    width: 100%;
+}
+
+.image-dropping,
+.image-upload-wrap:hover {
+    background-color: #effcff;
+    /*#1FB264;*/
+    border: 4px dashed #1EA7C5;
+    color: #2BC155;
+}
+
+.image-title-wrap {
+    padding: 0 15px 15px 15px;
+    color: #222;
+}
+
+.drag-text {
+    text-align: center;
+}
+
+.drag-text h3 {
+    font-weight: 100;
+    color: #0B2A97;
+    /* #15824B; */
+    padding: 60px 0;
+}
+
+.file-upload-image {
+    max-height: 300px;
+    /*max-width: 200px;*/
+    margin: auto;
+    padding-bottom: 20px;
+}
+
+
+/* fin estilos input file  */
+
+.form-control:disabled,
+.form-control[readonly] {
+    background: #efefef !important;
+}
+
+hr {
+    margin-top: 0rem;
+    margin-bottom: 1rem;
+    border: 0;
+    width: 100%;
+    border-top: 1px solid rgb(0 0 0 / 10%);
+}
+
+.bootstrap-select .btn {
+    border: 1px solid #1fa7c5 !important;
+}
+
+.dropleft .dropdown-toggle:before,
+.dropright .dropdown-toggle:before,
+.dropup .dropdown-toggle:after,
+.dropdown-toggle:after {
+    content: "\f107";
+    font-family: 'FONT AWESOME 5 FREE';
+    border: 0;
+    font-weight: 900;
+    vertical-align: middle;
+    margin-left: 0.25em;
+    line-height: 1;
+}
+
+.inputPago {
+    font-size: 24px;
+}
+
+.inputAdeudo {
+    font-size: 20px;
+}
+
+@media (max-width: 576px) {
+    .hidden-sm {
+        display: none;
+    }
+}
+
+.toolbar-top {
+    padding-bottom: 0px !important;
+}
+
+@media (max-width: 1199px) {
+    .carousel-responsive {
+        max-width: 200px;
+    }
+}
