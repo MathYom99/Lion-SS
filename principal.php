@@ -95,8 +95,8 @@
       <!-- MODALES -->
 
       <!-- Nueva Reservación -->
-      <div class="modal fade bd-example-modal-xl optionInsert" id="nuevaRes" tabindex="-1" role="dialog" aria-hidden="true">
-          <div class="modal-dialog modal-xl">
+      <div class="modal fade bd-example-modal-lg optionInsert" id="nuevaRes" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
               <div class="modal-content">
                   <div class="modal-header">
                       <h3 class="modal-title">Nueva Reservación</h3>
@@ -106,7 +106,7 @@
                   <div class="modal-body">
                     <input type="hidden" id="duracionHidden">
                       <div class="form-row">
-                          <div class="form-group col-lg-4">
+                          <div class="form-group col-lg-12">
                               <label style="width: 80%; display: inline-block;">Sala: <span class="text-danger">*</span></label>
                               <i class="text-primary fa fa-plus-square fa-lg pointer pull-right text-info" style="padding-right: 15px; margin-top: 15px;" data-toggle="modal" data-target="#nuevaSala"></i>
                               <div class="input-group input-info-o">
@@ -121,7 +121,7 @@
                               </div>
                           </div>
 
-                          <div class="form-group col-lg-4">
+                          <div class="form-group col-lg-12">
                               <label>Fecha:  <span class="text-danger">*</span></label>
                               <div class="input-group input-info-o">
                                   <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-calendar-alt"></i> </span></div>
@@ -129,19 +129,19 @@
                               </div>
                           </div>
 
-                          <div class="form-group col-lg-4">
-                              <label>Horario: <span class="text-danger">*</span></label>
+                          <div class="form-group col-lg-12">
+                              <label>Horario (Máximo 2 horas): <span class="text-danger">*</span></label>
                               <div class="form-row">
                                   <div class="form-group col-md-6">
                                       <div class="input-group input-info-o">
                                           <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-clock"></i> </span></div>
-                                          <input type="time" id="horaI" class="form-control" value="08:00" onchange="">
+                                          <input type="time" id="horaI" class="form-control" value="08:00" onchange="diferenciaHoras(horaI.value, horaT.value)">
                                       </div>
                                   </div>
                                   <div class="form-group col-md-6">
                                       <div class="input-group input-info-o">
                                           <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-clock"></i> </span></div>
-                                          <input type="time" id="horaT" class="form-control" value="09:00">
+                                          <input type="time" id="horaT" class="form-control" value="09:00" onchange="diferenciaHoras(horaI.value, horaT.value)">
                                       </div>
                                   </div>
                                   <span class="text-danger" id="spanHorarioMb" style="display: none;"></span>
@@ -160,8 +160,8 @@
 
 
         <!-- Nueva Sala -->
-        <div class="modal fade bd-example-modal-xl optionInsert" id="nuevaSala" tabindex="3" role="dialog" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-scrollable modal-xl">
+        <div class="modal fade bd-example-modal-lg optionInsert" id="nuevaSala" tabindex="3" role="dialog" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable modal-lg">
               <div class="modal-content">
                   <div class="modal-header">
                       <h3 class="modal-title">Nueva Sala</h3>
@@ -170,7 +170,7 @@
                   </div>
                   <div class="modal-body">
                       <div class="form-row">
-                          <div class="form-group col-lg-6">
+                          <div class="form-group col-lg-12">
                               <label>Nombre de la sala: <span class="text-danger">*</span></label>
                               <div class="input-group input-info-o">
                                   <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-id-card"></i> </span></div>
@@ -179,7 +179,7 @@
                               <span class="text-danger" id="spanNombreS" style="display: none;"></span>
                           </div>
 
-                          <div class="form-group col-lg-6">
+                          <div class="form-group col-lg-12">
                               <label>Capacidad: <span class="text-danger">*</span></label>
                               <div class="input-group input-info-o">
                                   <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-hashtag"></i> </span></div>
@@ -199,8 +199,8 @@
         </div>
 
          <!-- Edita Sala -->
-         <div class="modal fade bd-example-modal-xl" id="editSalaModal" tabindex="3" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-xl">
+         <div class="modal fade bd-example-modal-lg" id="editSalaModal" tabindex="3" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title">Editar Sala</h3>
@@ -211,7 +211,7 @@
                         <input type="hidden" id="idSalaE">
 
                         <div class="form-row">
-                          <div class="form-group col-lg-6">
+                          <div class="form-group col-lg-12">
                               <label>Nombre de la sala: <span class="text-danger">*</span></label>
                               <div class="input-group input-info-o">
                                   <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-id-card"></i> </span></div>
@@ -220,7 +220,7 @@
                               <span class="text-danger" id="spanNombreSE" style="display: none;"></span>
                           </div>
 
-                          <div class="form-group col-lg-6">
+                          <div class="form-group col-lg-12">
                               <label>Capacidad: <span class="text-danger">*</span></label>
                               <div class="input-group input-info-o">
                                   <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-hashtag"></i> </span></div>
@@ -229,7 +229,7 @@
                               <span class="text-danger" id="spanCapacidadSE" style="display: none;"></span>
                           </div>
 
-                            <div class="form-group col-lg-6">
+                            <div class="form-group col-lg-12">
                                 <label>Estatus:</label>
                                 <div class="input-group input-info-o">
                                     <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-eye"></i> </span></div>

@@ -127,6 +127,24 @@
             echo json_encode($array);
         }
 
+        else if($tipo == 'registraRes'){
+           $sala=$_POST['sala'];
+           $fecha=$_POST['fecha'];
+           $horaI=$_POST['horaI'];
+           $horaT=$_POST['horaT'];
+
+           $exist=$bd->select("SELECT Id as variable FROM `reservaciones` WHERE Sala='".$sala."' and Fecha='".$fecha."' AND (('".$horaI."'>=HoraI AND '".$horaT."'<=HoraT) OR ('".$horaI."'>=HoraI AND '".$horaI."'<=HoraT) OR ('".$horaT."'>=HoraI AND '".$horaT."'<=HoraT) OR (HoraI>='".$horaI."' and HoraT<='".$horaT."'))")['variable'];
+           if($exist>0){
+               echo "exist";
+               return;
+           }
+
+           $insert="INSERT INTO `reservaciones` (`Sala`, `Fecha`, `HoraI`, `HoraT`, `Estatus`) VALUES ('".$sala."', '".$fecha."', '".$horaI."', '".$horaT."', 1)";
+           if($bd->query($insert)){
+               echo "ok";
+           }
+       }
+
 
 
 

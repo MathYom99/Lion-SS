@@ -280,6 +280,72 @@ function eliminarSala(id) {
     })
 }
 
+function diferenciaHoras(hora1, hora2){
+  var formatohora = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+  if (!(hora1.match(formatohora)&& hora2.match(formatohora))){
+    mensaje('top', 'center', 2000, 3, 'Ingrese un horario correcto por favor', '<i class="fa fa-exclamation-triangle fa-lg"></i>');
+    $("#horaI").focus();
+    $('#btnRegistraRes').prop("disabled", true);
+    return;
+  }
+  var min1 = hora1.split(':').reduce((p, c) => parseInt(p) * 60 + parseInt(c));
+  var min2 = hora2.split(':').reduce((p, c) => parseInt(p) * 60 + parseInt(c));
+
+  if (min2<min1){
+    mensaje('top', 'center', 2000, 3, 'La hora de termino no debe ser menor a la inicial, ingrese un horario correcto por favor', '<i class="fa fa-exclamation-triangle fa-lg"></i>');
+    $("#horaT").focus();
+    $('#btnRegistraRes').prop("disabled", true);
+    return;
+  }
+  var diferencia = min2 - min1;
+  if(diferencia>120){
+    mensaje('top', 'center', 2000, 3, 'El horario excede las dos horas permitidas, ingrese un horario correcto por favor', '<i class="fa fa-exclamation-triangle fa-lg"></i>');
+    $("#horaT").focus();
+    $('#btnRegistraRes').prop("disabled", true);
+    return;
+  }
+  $('#btnRegistraRes').prop("disabled", false);
+
+}
+
+function registraRes(sala, fecha, horaI, horaT) {
+    if (sala=='no') {
+        mensaje('top', 'center', 2000, 3, 'Seleccione una sala por favor', '<i class="fa fa-exclamation-triangle fa-lg"></i>');
+        $("#salaR").focus();
+        return;
+    } else if (fecha=='') {
+        mensaje('top', 'center', 2000, 3, 'Ingrese la fecha de la reservación por favor', '<i class="fa fa-exclamation-triangle fa-lg"></i>');
+        $("#fecha").focus();
+        return;
+    }
+    $.ajax({
+        beforeSend: function() {
+            $('#btnRegistraRes').prop("disabled", true);
+            $('#btnRegistraRes').html('<i class="fa fa-circle-notch fa-spin"></i> Registrando...');
+        },
+        url: 'main.php',
+        type: 'POST',
+        data: { sala, fecha, horaI, horaT, tipo: "registraRes" },
+        success: function(respuesta) {
+            console.log(respuesta);
+            if (respuesta == "ok") {
+                swal("Registrada!", "Reservación registrada correctamente", "success");
+                $("#nuevaRes").modal('hide');
+                //recargaCalendarioRes();
+                //limpiamos formulario
+                $("#salaR").val('no');
+            } else if (respuesta == "exist") {
+                sweetAlert("Sala Ocupada...", "La sala no esta disponible para el horario seleccionado, por favor intente con un horario diferente o con otra sala", "error");
+            } else {
+                sweetAlert("Error...", "Error al registrar la reservación", "error");
+            }
+            $('#btnRegistraRes').prop("disabled", false);
+            $('#btnRegistraRes').html('Registrar Reservación');
+        },
+    });
+}
+
+
 function calendarioRes(desde, hasta, vista) {
     let eventos = [];
 
